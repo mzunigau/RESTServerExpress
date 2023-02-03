@@ -4,14 +4,21 @@ const {
 
 
 const usuariosGet = (req, res = response) => {
+
+
+
     res.json({
         msg: 'get API - controlador'
     });
 };
 
 const usuariosPut = (req, res = response) => {
+
+    const id = req.params.id;
+
     res.status(200).json({
-        msg: 'get API - controlador'
+        msg: 'get API - controlador',
+        id
     });
 };
 
