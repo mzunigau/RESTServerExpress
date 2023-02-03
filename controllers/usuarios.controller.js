@@ -16,8 +16,16 @@ const usuariosPut = (req, res = response) => {
 };
 
 const usuariosPost = (req, res = response) => {
+
+    const {
+        nombre,
+        apellido
+    } = req.body;
+
     res.status(201).json({
-        msg: "post API - controlador"
+        msg: "post API - controlador",
+        nombre,
+        apellido
     });
 };
 
