@@ -11,12 +11,17 @@ const {
 } = require('../middlewares/validar-campos');
 
 
+
+
 const {
     usuariosGet,
     usuariosPut,
     usuariosDelete,
     usuariosPost
 } = require('../controllers/usuarios.controller');
+const {
+    esRoleValido
+} = require('../helpers/db-validators');
 
 const router = Router();
 
@@ -30,7 +35,8 @@ router.post('/', [
     check('password', 'Es obligatorio y mas de 6 letras').isLength({
         min: 6
     }),
-    check('rol', 'No es un rol valido').isIn(['ADMIN_ROLE', 'USER_ROLE']),
+    check('rol').custom(esRoleValido),
+    // check('rol', 'No es un rol valido').isIn(['ADMIN_ROLE', 'USER_ROLE']),
     validarCampos
 ], usuariosPost);
 
