@@ -8,34 +8,56 @@ const Usuario = require('../models/usuario');
 
 
 
-const usuariosGet = (req = request, res = response) => {
+const usuariosGet = async (req = request, res = response) => {
+
     const {
-        q,
-        nombre,
-        apikey = 'no apikey'
-    } = req.query;
+        limite = 5, desde = 0
+    } = req.query
+    const query = {
+        estado: true
+    }
+
+    const [total, usuarios] = await Promise.all([
+        Usuario.countDocuments(query),
+        Usuario.find(query)
+        .skip(Number(desde))
+        .limit(Number(limite))
+    ]);
+
 
     res.json({
-        msg: 'get API - controlador',
-        q,
-        nombre,
-        apikey
+        total,
+        usuarios
     });
 };
 
-const usuariosPut = (req, res = response) => {
+const usuariosPut = async (req, res = response) => {
 
     const id = req.params.id;
+    const {
+        _id,
+        password,
+        google,
+        correo,
+        ...resto
+    } = req.body;
+
+    // Validar base de datos
+    if (password) {
+        const salt = bcryptjs.genSaltSync(10);
+        resto.password = bcryptjs.hashSync(password, salt);
+    }
+
+    const usuario = await Usuario.findByIdAndUpdate(id, resto, {
+        new: true
+    });
 
     res.status(200).json({
-        msg: 'get API - controlador',
-        id
+        usuario
     });
 };
 
 const usuariosPost = async (req, res = response) => {
-
-
 
     const {
         nombre,
@@ -49,17 +71,6 @@ const usuariosPost = async (req, res = response) => {
         password,
         rol
     });
-
-    //Verificar correo
-    const existeEmail = await Usuario.findOne({
-        correo
-    });
-    if (existeEmail) {
-        return res.status(400).json({
-            msg: 'Ese correo esta en uso'
-        });
-    }
-
 
     //Ecriptar pw
     const salt = bcryptjs.genSaltSync(10);
@@ -75,9 +86,21 @@ const usuariosPost = async (req, res = response) => {
     });
 };
 
-const usuariosDelete = (req, res = response) => {
-    res.status(200).json({
-        msg: "delete API - controlador"
+const usuariosDelete = async (req, res = response) => {
+
+    const {
+        id
+    } = req.params;
+
+    const usuario = await Usuario.findByIdAndUpdate(id, {
+        estado: false
+    }, {
+        new: true
+    });
+
+
+    res.json({
+        usuario
     });
 };
 

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const dbConnection = async() => {
+const dbConnection = async () => {
     try {
         mongoose.set("strictQuery", false);
         await mongoose.connect(
@@ -11,7 +11,7 @@ const dbConnection = async() => {
     } catch (error) {
         throw new Error('Error en la base de datos');
     }
-}
+};
 
 module.exports = {
     dbConnection
